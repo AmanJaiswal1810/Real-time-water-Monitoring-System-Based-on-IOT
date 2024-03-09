@@ -51,7 +51,7 @@
   <header id="header" class="fixed-top">
     <div class="container d-flex align-items-center">
 
-      <a href="index" class="logo me-auto"><img  src="{% static 'assets/img/logo1.png' %}" alt="" style="width: 200px; height: 90px;" ></a>
+      <a href="home" class="logo me-auto"><img  src="{% static 'assets/img/logo1.png' %}" alt="" style="width: 200px; height: 90px;" ></a>
       <!-- Uncomment below if you prefer to use an image logo -->
       <!-- <h1 class="logo me-auto"><a href="index.html">Medicio</a></h1> -->
 
@@ -62,7 +62,7 @@
           <li><a class="nav-link scrollto" href="#doctors">Engineers</a></li>
           <li><a class="nav-link scrollto" href="#contact">Contact</a></li>
           {% if user.is_authenticated %}
-          <li><a class="nav-link" href="result">Check results</a></li>
+          <li><a class="nav-link" href="result/{{user.username}}">Check results</a></li>
           {% endif %}
          
         </ul>
