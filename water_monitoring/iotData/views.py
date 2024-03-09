@@ -36,8 +36,11 @@ def Logout(request):
     auth.logout(request)
     return redirect('/')
 
-def result(request):
-    return render(request, 'result.html')
+def result(request, username):
+    return render(request, 'result.html',{'username':username})
+
+def home(request):
+    return redirect('/')
 
 class iotDataView(APIView):
     def get(self, request):
