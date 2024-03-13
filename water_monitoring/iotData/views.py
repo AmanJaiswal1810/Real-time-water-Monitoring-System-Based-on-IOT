@@ -1,3 +1,4 @@
+from django.forms import ValidationError
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.contrib.auth.models import User
@@ -7,13 +8,10 @@ from rest_framework import status
 from rest_framework.response import Response
 from django.http import JsonResponse
 from django.views import View
-
-from django.http import JsonResponse
-from django.views import View
-
 from iotData.serializers import IotDataSerializer
-
 from .models import IotData
+from django.core.mail import send_mail
+from .models import ContactFormSubmission
 
 def index(request):
     return render(request, 'index.html')
@@ -70,6 +68,7 @@ class iotDataView(APIView):
         )
         iotData.save()
         return Response(data, status=status.HTTP_200_OK)
+    
     def options(self, request, *args, **kwargs):
         response = JsonResponse({'message': 'CORS allowed'})
         response['Access-Control-Allow-Origin'] = '*'
@@ -78,3 +77,23 @@ class iotDataView(APIView):
         return response
 
 
+def SendEmail(request):
+    if request.method == 'POST':
+        name = request.POST.get('name')
+        email = request.POST.get('email')
+        subject = request.POST.get('subject')
+        message = request.POST.get('message')
+        
+        # Save form submission to the database
+        submission = ContactFormSubmission.objects.create(
+            name=name,
+            email=email,
+            subject=subject,
+            message=message
+        )
+        
+        # Optionally, send confirmation email, process data, etc.
+
+        return JsonResponse({'message': 'success'})
+    else:
+        return JsonResponse({'message': 'error'})
