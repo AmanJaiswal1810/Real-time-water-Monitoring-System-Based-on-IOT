@@ -64,11 +64,11 @@ class iotDataView(APIView):
             turbidity=data.get('turbidity'),
             username=data.get('username'),  # New field: username
             password=data.get('password'),  # New field: password
-            salinity=data.get('salinity'),  # New field: salinity
+            dissolved_oxygen=data.get('dissolved_oxygen'),  # New field: salinity
         )
         iotData.save()
         return Response(data, status=status.HTTP_200_OK)
-    
+
     def options(self, request, *args, **kwargs):
         response = JsonResponse({'message': 'CORS allowed'})
         response['Access-Control-Allow-Origin'] = '*'
@@ -83,7 +83,7 @@ def SendEmail(request):
         email = request.POST.get('email')
         subject = request.POST.get('subject')
         message = request.POST.get('message')
-        
+
         # Save form submission to the database
         submission = ContactFormSubmission.objects.create(
             name=name,
@@ -91,7 +91,7 @@ def SendEmail(request):
             subject=subject,
             message=message
         )
-        
+
         # Optionally, send confirmation email, process data, etc.
 
         return JsonResponse({'message': 'success'})
