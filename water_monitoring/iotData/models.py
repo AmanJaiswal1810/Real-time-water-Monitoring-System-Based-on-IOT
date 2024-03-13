@@ -18,3 +18,7 @@ class ContactFormSubmission(models.Model):
 
     def __str__(self):
         return self.subject
+<<<<<<< HEAD
+=======
+
+>>>>>>> 348987dbb6953943b529f79a351e70f5bbcb66aa
