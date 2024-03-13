@@ -7,4 +7,4 @@ class IotData(models.Model):
     turbidity = models.FloatField()
     username = models.CharField(max_length=100)  # New field: username
     password = models.CharField(max_length=100,default=timezone.now)  # New field: password
-    salinity = models.FloatField(default = 0.0)  # New field: salinity
+    dissolved_oxygen = models.FloatField(default = 0.0)  # New field: salinity
