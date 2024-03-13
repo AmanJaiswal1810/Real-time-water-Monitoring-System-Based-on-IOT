@@ -64,7 +64,7 @@ class iotDataView(APIView):
             turbidity=data.get('turbidity'),
             username=data.get('username'),  # New field: username
             password=data.get('password'),  # New field: password
-            salinity=data.get('salinity'),  # New field: salinity
+            dissolved_oxygen=data.get('dissolved_oxygen'),  # New field: salinity
         )
         iotData.save()
         return Response(data, status=status.HTTP_200_OK)
