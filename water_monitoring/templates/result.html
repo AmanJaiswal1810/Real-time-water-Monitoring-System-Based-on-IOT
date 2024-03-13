@@ -13,8 +13,7 @@
       <div class="navigation">
         <ul>
           <li>
-            <a href="home">
-              <span class="icon"><ion-icon name="logo-apple"></ion-icon></span>
+            <a href="{% url 'home' %}">
               <span class="title">HydroSense</span>
             </a>
           </li>
@@ -25,7 +24,7 @@
             </a>
           </li>
           <li>
-            <a href="Logout">
+            <a href="{% url 'Logout' %}">
               <span class="icon"><ion-icon name="log-out-outline"></ion-icon></span>
               <span class="title">Sign Out</span>
             </a>

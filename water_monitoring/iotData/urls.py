@@ -8,4 +8,5 @@ urlpatterns = [
     path('Logout', views.Logout, name='Logout'),
     path('result/<str:username>/', views.result, name='result'),
     path('home', views.home, name='home'),
+    path('SendEmail', views.SendEmail, name='SendEmail'),
 ]
