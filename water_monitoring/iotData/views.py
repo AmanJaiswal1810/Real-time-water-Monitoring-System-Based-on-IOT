@@ -14,6 +14,7 @@ from django.core.mail import send_mail
 from .models import ContactFormSubmission
 from .models import Room
 from .models import Message
+from .models import post
 
 def index(request):
     return render(request, 'index.html')
@@ -126,3 +127,11 @@ def getMessages(request, room):
     room_details = Room.objects.get(name=room)
     messages = Message.objects.filter(room=room_details.id)
     return JsonResponse({'messages': list(messages.values())})
+
+def blogs(request):
+    Post = post.objects.all()
+    return render(request,'blogs.html',{'Post':Post})
+
+def Posts(request, pk):
+    Posts = post.objects.get(id=pk)
+    return render(request, 'Posts.html', {'Posts' : Posts})
