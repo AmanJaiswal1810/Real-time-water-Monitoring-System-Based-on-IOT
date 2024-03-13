@@ -4,4 +4,4 @@ from .models import IotData
 class IotDataSerializer(serializers.ModelSerializer):
     class Meta:
         model = IotData
-        exclude = ['password']
+        fields = '__all__'
