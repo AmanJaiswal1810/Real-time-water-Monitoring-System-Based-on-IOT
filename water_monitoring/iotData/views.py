@@ -6,12 +6,15 @@ from django.contrib.auth.models import auth
 from rest_framework.views import APIView
 from rest_framework import status
 from rest_framework.response import Response
-from django.http import JsonResponse
+from django.http import HttpResponse, JsonResponse
 from django.views import View
 from iotData.serializers import IotDataSerializer
 from .models import IotData
 from django.core.mail import send_mail
 from .models import ContactFormSubmission
+from .models import Room
+from .models import Message
+from .models import post
 
 def index(request):
     return render(request, 'index.html')
@@ -97,3 +100,38 @@ def SendEmail(request):
         return JsonResponse({'message': 'success'})
     else:
         return JsonResponse({'message': 'error'})
+
+def room(request, room):
+    username = request.GET.get('username')
+    room_details = Room.objects.get(name = room)
+    return render(request, 'room.html', {
+        'username':username,
+        'room':room,
+        'room_details':room_details
+    })
+
+def checkview(request, username):
+    room = 'Groupchat'
+    return redirect('/'+room+'/?username='+username)
+
+def send(request):
+    username = request.POST['username']
+    room_id = request.POST['room_id']
+    message = request.POST['message']
+    
+    new_message = Message.objects.create(value = message, user=username, room=room_id)
+    new_message.save()
+    return HttpResponse('Message sent succesfully')
+
+def getMessages(request, room):
+    room_details = Room.objects.get(name=room)
+    messages = Message.objects.filter(room=room_details.id)
+    return JsonResponse({'messages': list(messages.values())})
+
+def blogs(request):
+    Post = post.objects.all()
+    return render(request,'blogs.html',{'Post':Post})
+
+def Posts(request, pk):
+    Posts = post.objects.get(id=pk)
+    return render(request, 'Posts.html', {'Posts' : Posts})
