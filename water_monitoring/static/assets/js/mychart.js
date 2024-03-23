@@ -1,29 +1,39 @@
+   
 
-    // Function to fetch latest data from the API and update the respective card's value
-    function fetchLatestDataAndUpdate(endpoint, parameter, elementId) {
+
+    function fetchLatestDataAndUpdate(endpoint, username, parameter, elementId) {
         fetch(endpoint)
             .then(response => response.json())
             .then(data => {
-                // Assuming the API response contains an array of objects with the latest data
-                // Get the latest object from the array
-                const latestData = data[data.length - 1];
-                // Get the value of the specified parameter from the latest object
-                const value = latestData[parameter];
-                // Update the content of the element with the specified ID
-                document.getElementById(elementId).textContent = value;
+                // Filter data based on the username
+                const userData = data.filter(entry => entry.username === username);
+                // Assuming the filtered data array is not empty
+                if (userData.length > 0) {
+                    // Get the latest object from the filtered array
+                    const latestData = userData[userData.length - 1];
+                    // Get the value of the specified parameter from the latest object
+                    const value = latestData[parameter];
+                    // Update the content of the element with the specified ID
+                    document.getElementById(elementId).textContent = value;
+                } else {
+                    console.error('No data available for the specified username:', username);
+                }
             })
             .catch(error => {
                 console.error('Error fetching data:', error);
             });
     }
-
+    
     // Call the function for each parameter
-    fetchLatestDataAndUpdate('https://aman12345.pythonanywhere.com/api/iotData/', 'pHValue', 'phValue');
-    fetchLatestDataAndUpdate('https://aman12345.pythonanywhere.com/api/iotData/', 'turbidity', 'turbidityValue');
-    fetchLatestDataAndUpdate('https://aman12345.pythonanywhere.com/api/iotData/', 'temperature', 'temperatureValue');
-    fetchLatestDataAndUpdate('https://aman12345.pythonanywhere.com/api/iotData/', 'salinity', 'oxygenValue'); // Assuming dissolved oxygen is represented by 'salinity' in your API
-
-    async function fetchData() {
+    // Assuming you have set the username variable in your HTML
+    fetchLatestDataAndUpdate('https://aman12345.pythonanywhere.com/api/iotData/', username, 'pHValue', 'phValue');
+    fetchLatestDataAndUpdate('https://aman12345.pythonanywhere.com/api/iotData/', username, 'turbidity', 'turbidityValue');
+    fetchLatestDataAndUpdate('https://aman12345.pythonanywhere.com/api/iotData/', username, 'temperature', 'temperatureValue');
+    fetchLatestDataAndUpdate('https://aman12345.pythonanywhere.com/api/iotData/', username, 'dissolved_oxygen', 'oxygenValue'); // Assuming dissolved oxygen is represented by 'dissolved_oxygen' in your API
+    
+   
+    
+    async function fetchData(username) {
         try {
             const response = await fetch('https://aman12345.pythonanywhere.com/api/iotData/', {
                 method: 'GET',
@@ -39,6 +49,7 @@
     
             const data = await response.json();
             console.log('Data from API:', data); // Display the fetched data in the console
+            const userData = data.filter(entry => entry.username === username);
     
             // Get the latest entry from the data array
             const latestEntry = data[data.length - 1];
@@ -48,14 +59,14 @@
             const pHValue = latestEntry.pHValue;
             const temperature = latestEntry.temperature;
             const turbidity = latestEntry.turbidity/100;
-            const salinity = latestEntry.salinity;
+            const dissolved_oxygen = latestEntry.dissolved_oxygen;
     
-            // Define ideal ranges for pH, temperature, turbidity, and salinity
+            // Define ideal ranges for pH, temperature, turbidity, and dissolved_oxygen
             const idealRanges = {
                 pH: { min: 6.5, max: 8.5 },
                 temperature: { min: 0, max: 30 },
                 turbidity: { min: 0, max: 5 },
-                salinity: { min: 0, max: 15 }
+                dissolved_oxygen: { min: 0, max: 15 }
             };
     
             // Function to determine background color based on value and ideal range
@@ -77,12 +88,12 @@
                     labels: ['pH Value', 'Temperature', 'Turbidity', 'Oxygen'],
                     datasets: [{
                         label: 'Latest Data',
-                        data: [pHValue, temperature, turbidity, salinity],
+                        data: [pHValue, temperature, turbidity, dissolved_oxygen],
                         backgroundColor: [
                             getBackgroundColor(pHValue, idealRanges.pH),
                             getBackgroundColor(temperature, idealRanges.temperature),
                             getBackgroundColor(turbidity, idealRanges.turbidity),
-                            getBackgroundColor(salinity, idealRanges.salinity)
+                            getBackgroundColor(dissolved_oxygen, idealRanges.dissolved_oxygen)
                         ]
                     }]
                 },
@@ -107,47 +118,56 @@
         fetchData();
     });
 
-    async function fetchDataAndPopulateTable() {
-        try {
-            const response = await fetch('https://aman12345.pythonanywhere.com/api/iotData/');
-            if (!response.ok) {
-                throw new Error('Network response was not ok');
-            }
-            const data = await response.json();
-            console.log('Data from API:', data);
-            
-            // Sort the data in decreasing order of the "id" field
-            data.sort((a, b) => b.id - a.id);
-            
-            // Get the table body element
-            const tableBody = document.getElementById('tableBody');
-            
-            // Clear existing rows
-            tableBody.innerHTML = '';
-            
-            // Loop through the sorted data and populate the table
-            data.forEach(entry => {
-                const row = document.createElement('tr');
-                row.innerHTML = `
-                    <td>${entry.username}</td>
-                    <td>${entry.id}</td>
-                    <td>${entry.pHValue}</td>
-                    <td>${entry.turbidity}</td>
-                    <td>${entry.temperature}</td>
-                    <td>${entry.salinity}</td>
-                    <td><span class="status ${getWQILabel(entry)}">${getWQILabel(entry)}</span></td>
-                `;
-                tableBody.appendChild(row);
-            });
-        } catch (error) {
-            console.error('Error fetching data:', error);
+    
+    // Function to fetch and populate table data for the logged-in user
+async function fetchDataAndPopulateTableForUser(username) {
+    try {
+        const response = await fetch('https://aman12345.pythonanywhere.com/api/iotData/');
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
         }
+        const data = await response.json();
+        console.log('Data from API:', data);
+        
+        // Filter data based on the username
+        const userData = data.filter(entry => entry.username === username);
+        userData.sort((a, b) => b.id - a.id);
+        // Get the table body element
+        const tableBody = document.getElementById('tableBody');
+        
+        // Clear existing rows
+        tableBody.innerHTML = '';
+        
+        // Loop through the filtered data and populate the table
+        userData.forEach(entry => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${entry.username}</td>
+                <td>${entry.id}</td>
+                <td>${entry.pHValue}</td>
+                <td>${entry.turbidity}</td>
+                <td>${entry.temperature}</td>
+                <td>${entry.dissolved_oxygen}</td>
+                <td><span class="status ${getWQILabel(entry)}">${getWQILabel(entry)}</span></td>
+            `;
+            tableBody.appendChild(row);
+        });
+    } catch (error) {
+        console.error('Error fetching data:', error);
     }
+}
+
+// Call the fetchDataAndPopulateTableForUser function when the page loads
+window.addEventListener('load', () => {
+    // Assuming you have set the username variable in your HTML
+    fetchDataAndPopulateTableForUser(username);
+});
+
     
     // Function to determine status based on pH and turbidity values
     function getWQILabel(entry) {
-        const wqi = calculateWQI(entry.pHValue, entry.turbidity, entry.temperature, entry.salinity);
-        if (wqi <= 100) {
+        const wqi = calculateWQI(entry.pHValue, entry.turbidity, entry.temperature, entry.dissolved_oxygen);
+        if (wqi >= 60) {
             return 'safe';
         } else {
             return 'NotSafe';
@@ -158,9 +178,9 @@
     window.addEventListener('load', () => {
         fetchDataAndPopulateTable();
     });
-    
 
-    async function fetchDataAndPlotChart() {
+    
+    async function fetchDataAndPlotChart(username) {
         try {
             const response = await fetch('https://aman12345.pythonanywhere.com/api/iotData/', {
                 method: 'GET',
@@ -175,10 +195,11 @@
     
             const data = await response.json();
             console.log('Data from API:', data);
+            const userData = data.filter(entry => entry.username === username); 
     
             // Calculate WQI for each entry
             const wqiData = data.map(entry => {
-                const wqi = calculateWQI(entry.pHValue, entry.turbidity, entry.temperature, entry.salinity);
+                const wqi = calculateWQI(entry.pHValue, entry.turbidity, entry.temperature, entry.dissolved_oxygen);
                 return { timestamp: entry.id, wqi: wqi };
             });
     
@@ -239,57 +260,37 @@
     
     // Call the fetchDataAndPlotChart function when the page loads
     window.addEventListener('load', () => {
-        fetchDataAndPlotChart();
+        const username = "{{ username }}"; // Assuming you have a way to retrieve the username
+        fetchDataAndPlotChart(username);
     });
     
-    // Function to calculate Water Quality Index (WQI)
-    function calculateWQI(pH, turbidity, temperature, salinity) {
+    function calculateWQI(pH, turbidity, temperature, dissolved_oxygen) {
         // Define weights for each parameter
         const pHWeight = 0.25;
         const turbidityWeight = 0.25;
         const temperatureWeight = 0.25;
-        const salinityWeight = 0.25;
+        const dissolved_oxygenWeight = 0.25;
     
+        // Normalize parameters to a 0-100 scale
+        const normalize = (value, min, max) => {
+            return Math.min(Math.max((value - min) / (max - min) * 100, 0), 100);
+        };
+        turbidity/=100;
         // Calculate sub-indices for each parameter
-        const pHSubIndex = (pH - 6) / (9 - 6) * 100;
-        const turbiditySubIndex = (turbidity - 0) / (5 - 0) * 100;
-        const temperatureSubIndex = (temperature - 0) / (30 - 0) * 100;
-        const salinitySubIndex = (salinity - 0) / (15 - 0) * 100;
+        const pHSubIndex = normalize(pH, 6.5, 8.5);
+        const turbiditySubIndex = normalize(turbidity, 0, 100);
+        const temperatureSubIndex = normalize(temperature, 0, 30);
+        const dissolved_oxygenSubIndex = normalize(dissolved_oxygen, 0, 15);
     
         // Calculate overall WQI using weighted sum of sub-indices
         const overallWQI = (pHSubIndex * pHWeight + turbiditySubIndex * turbidityWeight +
-            temperatureSubIndex * temperatureWeight + salinitySubIndex * salinityWeight) /
-            (pHWeight + turbidityWeight + temperatureWeight + salinityWeight);
+            temperatureSubIndex * temperatureWeight + dissolved_oxygenSubIndex * dissolved_oxygenWeight) /
+            (pHWeight + turbidityWeight + temperatureWeight + dissolved_oxygenWeight);
     
         // Return the calculated WQI
+        
         return overallWQI;
     }
+    // console.log(calculateWQI());
 
-    // ---------------------------------History Manipulation------------------------
-    document.addEventListener('DOMContentLoaded', function() {
-        const viewAllButton = document.getElementById('viewAllButton');
-    
-        // Add event listener to the View All button
-        viewAllButton.addEventListener('click', function(event) {
-            event.preventDefault(); // Prevent default behavior of the link
-            // Toggle visibility of all table rows
-            const rows = document.querySelectorAll('#tableBody tr');
-            for (const row of rows) {
-                row.style.display = 'table-row';
-            }
-            // Hide the View All button after clicking
-            viewAllButton.style.display = 'none';
-        });
-    
-        // Hide rows after the 15th initially
-        const rows = document.querySelectorAll('#tableBody tr');
-        for (let i = 15; i < rows.length; i++) {
-            rows[i].style.display = 'none';
-        }
-    });
-    
-    
-    
-    
-    
-
+   console.log(username,"error");

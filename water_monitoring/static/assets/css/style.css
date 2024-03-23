@@ -989,6 +989,8 @@ section {
   text-align: center;
 }
 
+
+
 @media (min-width: 992px) {
   .gallery .swiper-wrapper {
     padding: 40px 0;
