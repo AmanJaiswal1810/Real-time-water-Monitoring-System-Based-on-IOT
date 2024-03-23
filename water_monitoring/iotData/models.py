@@ -20,8 +20,6 @@ class ContactFormSubmission(models.Model):
     def __str__(self):
         return self.subject
 
-<<<<<<< HEAD
-=======
 class Room(models.Model):
     name = models.CharField(max_length=100)
 
@@ -30,9 +28,8 @@ class Message(models.Model):
     date = models.DateTimeField(default = datetime.now, blank = True)
     user = models.CharField(max_length=100000)
     room = models.CharField(max_length=1000000)
-    
+
 class post(models.Model):
     title = models.CharField(max_length=100)
     body = models.CharField(max_length=1000000)
     created_at = models.DateTimeField(default = datetime.now, blank=True)
->>>>>>> 7ca60859deabef653a1b691959d897f6aaa0676c
