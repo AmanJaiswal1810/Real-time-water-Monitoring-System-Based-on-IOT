@@ -14,10 +14,12 @@ body {
 }
 
 .header {
-  padding: 2px;
-  font-size: 40px;
+  padding: 20px;
+  font-size: 36px;
   text-align: center;
-  background: white;
+  background: white; /* Theme color */
+  color: #3fbbc0; /* Text color */
+  border-bottom: 2px solid #3fbbc0;
 }
 
 .leftcolumn {   
@@ -26,9 +28,11 @@ body {
 }
 
 .card {
-   background-color: white;
-   padding: 20px;
-   margin-top: 20px;
+  background-color: white;
+  padding: 20px;
+  margin-top: 20px;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Adding shadow for depth */
 }
 
 .row:after {
@@ -48,19 +52,17 @@ body {
 <body>
 
 <div class="header">
-  <h2>Aman's Blog</h2>
+  <h2>HydroSense Forum</h2>
 </div>
 
 <div class="row">
   <div class="leftcolumn">
   
-  <div  class="card">
-    
-    <h2>{{Posts.title}}</h2>
-    <h5>{{Posts.created_at}}</h5>
-    <p>{{Posts.body}}</p>
-    
-  </div>
+    <div class="card">
+      <h2>{{Posts.title}}</h2>
+      <h5>{{Posts.created_at}}</h5>
+      <p>{{Posts.body}}</p>
+    </div>
  
   </div>
 </div>

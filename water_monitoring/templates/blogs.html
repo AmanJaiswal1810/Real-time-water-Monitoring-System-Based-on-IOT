@@ -8,27 +8,26 @@
 }
 
 body {
-  font-family: Arial;
+  font-family: Arial, sans-serif;
   padding: 20px;
-  background: #f1f1f1;
+  background-color: #f1f1f1;
 }
 
 .header {
-  padding: 2px;
-  font-size: 40px;
+  padding: 20px;
+  font-size: 36px;
   text-align: center;
-  background: white;
+  color: #3fbbc0;
+  background-color: #fff;
+  border-bottom: 2px solid #3fbbc0;
 }
 
-.leftcolumn {   
-  float: left;
-  width: 100%;
-}
-
-.card {
-   background-color: white;
-   padding: 20px;
-   margin-top: 20px;
+.container {
+  margin: 20px auto;
+  padding: 20px;
+  background-color: #fff;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
 .row:after {
@@ -48,21 +47,27 @@ body {
 <body>
 
 <div class="header">
-  <h2>Aman's Blog</h2>
+  <h2>Hydrosense Forum</h2>
 </div>
+
+<div class="container">
+  <!-- No cards here -->
+
 
 <div class="row">
   <div class="leftcolumn">
-  {% for post in Post reversed %}
-  <div  class="card">
-    <a style = "text-decoration: none; color:black;" href="/Posts/{{post.id}}">
-    <h2>{{post.title}}</h2>
-    <h5>{{post.created_at}}</h5>
-    <p>{{post.body|truncatewords:20}}</p>
-    </a>
+    <!-- Your existing cards -->
+    {% for post in Post reversed %}
+    <div class="card">
+      <a style="text-decoration: none; color: #000;" href="/Posts/{{post.id}}">
+        <h2>{{post.title}}</h2>
+        <h5>{{post.created_at}}</h5>
+        <p>{{post.body|truncatewords:20}}</p>
+      </a>
+    </div>
+    {% endfor %}
   </div>
-  {% endfor %}
-  </div>
+</div>
 </div>
 
 </body>
